@@ -8,7 +8,6 @@ using System.Web.Http;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
-using System.Web.Mvc;
 using System.Net;
 using movieReviewAPI.Models;
 
@@ -126,6 +125,27 @@ namespace movieReviewAPI.Controllers
             catch (Exception)
             {
                 return "Failed to Delete!";
+            }
+        }
+
+        
+        [Route("api/Movie/SaveFile")]
+        public string SaveFile()
+        {
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                var postedFile = httpRequest.Files[0];
+                string filename = postedFile.FileName;
+                var physicalPath = HttpContext.Current.Server.MapPath("~/Photos/" + filename);
+
+                postedFile.SaveAs(physicalPath);
+
+                return filename;
+            }
+            catch(Exception)
+            {
+                return "anonymous.png";
             }
         }
     }
