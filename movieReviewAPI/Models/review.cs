@@ -5,12 +5,12 @@ using System.Web;
 
 namespace movieReviewAPI.Models
 {
-    public class review
-    {
-        public int movie_id { get; set; }
-        public int person_id { get; set; }
-        public double review_rating { get; set; }
-        public string update_ts { get; set; }
-        public string create_ts { get; set; }
+    public class Review
+    {   
+        public int ReviewId { get; set; }
+        public int MovieId { get; set; }
+        public double Rating { get; set; }
+        public string ReviewDescription { get; set; }
+
     }
 }

@@ -162,6 +162,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\MovieController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -170,7 +171,7 @@
     </Compile>
     <Compile Include="Models\Movie.cs" />
     <Compile Include="Models\person.cs" />
-    <Compile Include="Models\review.cs" />
+    <Compile Include="Models\Review.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -13,13 +13,13 @@ using movieReviewAPI.Models;
 
 namespace movieReviewAPI.Controllers
 {
-    public class MovieController : ApiController
+    public class ReviewController : ApiController
     {
-        // GET: Movie
+        // GET: Review
         public HttpResponseMessage Get()
         {
-            string query = @"select MovieId,MovieName,MovieDirector,MovieReleaseDate,MovieDescription,MoviePhoto from 
-            dbo.Movie
+            string query = @"select ReviewId,MovieId,Rating,ReviewDescription from 
+            dbo.Review
             ";
             DataTable table = new DataTable();
             using(var con= new SqlConnection (ConfigurationManager.
@@ -35,10 +35,11 @@ namespace movieReviewAPI.Controllers
 
         }
 
+
         public HttpResponseMessage Get(int id)
         {
-            string query = @"select MovieId,MovieName,MovieDirector,MovieReleaseDate,MovieDescription,MoviePhoto from 
-            dbo.Movie where MovieId=" + id + @"
+            string query = @"select ReviewId,MovieId,Rating,ReviewDescription from 
+            dbo.Review where MovieId=" + id + @"
             ";
             DataTable table = new DataTable();
             using (var con = new SqlConnection(ConfigurationManager.
@@ -54,17 +55,17 @@ namespace movieReviewAPI.Controllers
 
         }
 
-        public string Post(Movie mov)
+
+
+        public string Post(Review rev)
         {
             try
             {
                 string query = @"
-                    insert into dbo.Movie values
-                    ('"+mov.MovieName+ @"'
-                     ,'" +mov.MovieDirector+ @"'
-                     ,'" +mov.MovieReleaseDate+ @"'
-                     ,'" +mov.MovieDescription+ @"'
-                     ,'" +mov.MoviePhoto+ @"'
+                    insert into dbo.Review values
+                    ('" +rev.MovieId+ @"',
+                     '" +rev.Rating+ @"',
+                     '" +rev.ReviewDescription+ @"'
 )
                     ";
 
@@ -87,18 +88,14 @@ namespace movieReviewAPI.Controllers
             }
         }
 
-        public string Put(Movie mov)
+        public string Put(Review rev)
         {
             try
             {
                 string query = @"
-                    update dbo.Movie set 
-                    MovieName='" + mov.MovieName + @"'
-                    ,MovieDirector='" + mov.MovieDirector + @"'
-                    ,MovieReleaseDate='" + mov.MovieReleaseDate + @"'
-                    ,MovieDescription='" + mov.MovieDescription + @"'
-                    ,MoviePhoto='" + mov.MoviePhoto + @"'
-                    where MovieId=" + mov.MovieId + @"
+                    update dbo.Review set 
+                    Rating='" + rev.Rating + @"'
+                    where Review=" + rev.ReviewId + @"
                     ";
 
                 DataTable table = new DataTable();
@@ -125,7 +122,7 @@ namespace movieReviewAPI.Controllers
             try
             {
                 string query = @"
-                    delete from dbo.Movie where MovieId=" + id + @"
+                    delete from dbo.Review where ReviewId=" + id + @"
                     ";
 
                 DataTable table = new DataTable();
@@ -147,25 +144,6 @@ namespace movieReviewAPI.Controllers
             }
         }
 
-        
-        [Route("api/Movie/SaveFile")]
-        public string SaveFile()
-        {
-            try
-            {
-                var httpRequest = HttpContext.Current.Request;
-                var postedFile = httpRequest.Files[0];
-                string filename = postedFile.FileName;
-                var physicalPath = HttpContext.Current.Server.MapPath("~/Photos/" + filename);
-
-                postedFile.SaveAs(physicalPath);
-
-                return filename;
-            }
-            catch(Exception)
-            {
-                return "anonymous.png";
-            }
-        }
+       
     }
 }
