@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Net;
 using movieReviewAPI.Models;
+using movieReviewAPI.Services;
 
 namespace movieReviewAPI.Controllers
 {
@@ -21,15 +22,8 @@ namespace movieReviewAPI.Controllers
             string query = @"select ReviewId,MovieId,Rating,ReviewDescription from 
             dbo.Review
             ";
-            DataTable table = new DataTable();
-            using(var con= new SqlConnection (ConfigurationManager.
-                       ConnectionStrings["MovieReviewDB"].ConnectionString))
-                       using (var cmd= new SqlCommand(query,con))
-            using (var da = new SqlDataAdapter(cmd))
-            {
-                cmd.CommandType = CommandType.Text;
-                da.Fill(table);
-            }
+
+            DataTable table = ReviewService.reviewService(query);
 
             return Request.CreateResponse(HttpStatusCode.OK, table);
 
@@ -41,20 +35,12 @@ namespace movieReviewAPI.Controllers
             string query = @"select ReviewId,MovieId,Rating,ReviewDescription from 
             dbo.Review where MovieId=" + id + @"
             ";
-            DataTable table = new DataTable();
-            using (var con = new SqlConnection(ConfigurationManager.
-                       ConnectionStrings["MovieReviewDB"].ConnectionString))
-            using (var cmd = new SqlCommand(query, con))
-            using (var da = new SqlDataAdapter(cmd))
-            {
-                cmd.CommandType = CommandType.Text;
-                da.Fill(table);
-            }
+
+            DataTable table = ReviewService.reviewService(query);
 
             return Request.CreateResponse(HttpStatusCode.OK, table);
 
         }
-
 
 
         public string Post(Review rev)
@@ -69,15 +55,7 @@ namespace movieReviewAPI.Controllers
 )
                     ";
 
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = ReviewService.reviewService(query);
 
                 return "Added Sucess!";
 
@@ -98,15 +76,7 @@ namespace movieReviewAPI.Controllers
                     where Review=" + rev.ReviewId + @"
                     ";
 
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = ReviewService.reviewService(query);
 
                 return "Update Sucess!";
 
@@ -125,15 +95,7 @@ namespace movieReviewAPI.Controllers
                     delete from dbo.Review where ReviewId=" + id + @"
                     ";
 
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = ReviewService.reviewService(query);
 
                 return "Delete Sucess!";
 

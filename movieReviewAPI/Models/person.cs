@@ -9,6 +9,7 @@ namespace movieReviewAPI.Models
     {
         public int UserId { get; set; }
         public string UserName{ get; set; }
+        public bool adminFlag { get; set; }
 
     }
 }

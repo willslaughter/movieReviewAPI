@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Net;
 using movieReviewAPI.Models;
+using movieReviewAPI.Services;
 
 namespace movieReviewAPI.Controllers
 {
@@ -18,41 +19,45 @@ namespace movieReviewAPI.Controllers
         // GET: Movie
         public HttpResponseMessage Get()
         {
-            string query = @"select MovieId,MovieName,MovieDirector,MovieReleaseDate,MovieDescription,MoviePhoto from 
+            string query = @"select MovieId,MovieName,MovieDirector,MovieDescription,MoviePhoto,ReviewAverage from 
             dbo.Movie
             ";
-            DataTable table = new DataTable();
-            using(var con= new SqlConnection (ConfigurationManager.
-                       ConnectionStrings["MovieReviewDB"].ConnectionString))
-                       using (var cmd= new SqlCommand(query,con))
-            using (var da = new SqlDataAdapter(cmd))
-            {
-                cmd.CommandType = CommandType.Text;
-                da.Fill(table);
-            }
+
+            DataTable table = MovieService.movieService(query);
 
             return Request.CreateResponse(HttpStatusCode.OK, table);
 
         }
+        
+        
 
         public HttpResponseMessage Get(int id)
         {
-            string query = @"select MovieId,MovieName,MovieDirector,MovieReleaseDate,MovieDescription,MoviePhoto from 
+            string query = @"select MovieId,MovieName,MovieDirector,MovieDescription,MoviePhoto,ReviewAverage from 
             dbo.Movie where MovieId=" + id + @"
             ";
-            DataTable table = new DataTable();
-            using (var con = new SqlConnection(ConfigurationManager.
-                       ConnectionStrings["MovieReviewDB"].ConnectionString))
-            using (var cmd = new SqlCommand(query, con))
-            using (var da = new SqlDataAdapter(cmd))
-            {
-                cmd.CommandType = CommandType.Text;
-                da.Fill(table);
-            }
+
+            DataTable table = MovieService.movieService(query);
 
             return Request.CreateResponse(HttpStatusCode.OK, table);
 
         }
+        
+
+        [Route("api/movie/GetRatingAverage/{id}")]
+        [HttpGet]
+        public HttpResponseMessage GetRatingAverage(int id)
+        {
+            string query = @"select AVG(Rating) from 
+            dbo.Review where MovieId=" + id + @"
+            ";
+
+            DataTable table = ReviewService.reviewService(query);
+
+            return Request.CreateResponse(HttpStatusCode.OK, table);
+
+        }
+        
 
         public string Post(Movie mov)
         {
@@ -60,23 +65,16 @@ namespace movieReviewAPI.Controllers
             {
                 string query = @"
                     insert into dbo.Movie values
-                    ('"+mov.MovieName+ @"'
-                     ,'" +mov.MovieDirector+ @"'
-                     ,'" +mov.MovieReleaseDate+ @"'
-                     ,'" +mov.MovieDescription+ @"'
-                     ,'" +mov.MoviePhoto+ @"'
+                    ('" + mov.MovieName + @"'
+                     ,'" + mov.MovieDirector + @"'
+                     ,'" + mov.MovieDescription + @"'
+                     ,'" + mov.MoviePhoto + @"'
+                     ,'" + mov.ReviewAverage + @"'
+                   
 )
                     ";
 
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = MovieService.movieService(query);
 
                 return "Added Sucess!";
 
@@ -95,21 +93,14 @@ namespace movieReviewAPI.Controllers
                     update dbo.Movie set 
                     MovieName='" + mov.MovieName + @"'
                     ,MovieDirector='" + mov.MovieDirector + @"'
-                    ,MovieReleaseDate='" + mov.MovieReleaseDate + @"'
                     ,MovieDescription='" + mov.MovieDescription + @"'
                     ,MoviePhoto='" + mov.MoviePhoto + @"'
+                    ,ReviewAverage='" +mov.ReviewAverage + @"'
+                    
                     where MovieId=" + mov.MovieId + @"
                     ";
 
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = MovieService.movieService(query);
 
                 return "Update Sucess!";
 
@@ -128,15 +119,7 @@ namespace movieReviewAPI.Controllers
                     delete from dbo.Movie where MovieId=" + id + @"
                     ";
 
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = MovieService.movieService(query);
 
                 return "Delete Sucess!";
 
@@ -148,24 +131,5 @@ namespace movieReviewAPI.Controllers
         }
 
         
-        [Route("api/Movie/SaveFile")]
-        public string SaveFile()
-        {
-            try
-            {
-                var httpRequest = HttpContext.Current.Request;
-                var postedFile = httpRequest.Files[0];
-                string filename = postedFile.FileName;
-                var physicalPath = HttpContext.Current.Server.MapPath("~/Photos/" + filename);
-
-                postedFile.SaveAs(physicalPath);
-
-                return filename;
-            }
-            catch(Exception)
-            {
-                return "anonymous.png";
-            }
-        }
     }
 }
