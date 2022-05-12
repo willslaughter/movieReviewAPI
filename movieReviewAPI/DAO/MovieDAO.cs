@@ -21,10 +21,10 @@ m.MovieName,
 m.MovieDirector,
 m.MovieDescription,
 m.MoviePhoto,
-AVG(r.Rating) AS ReviewAverage
+isnull(AVG(r.Rating),0) AS ReviewAverage
 FROM
 dbo.Movie AS m
-INNER JOIN
+LEFT OUTER JOIN
 dbo.Review AS r
 ON r.MovieId = m.MovieId
 GROUP BY
@@ -37,9 +37,11 @@ ORDER BY
 m.MovieName";
 
 
-            string query2 = @"select MovieId,MovieName,MovieDirector,MovieDescription, MoviePhoto, ReviewAverage from 
+
+            string query2 = @"select MovieId,MovieName,MovieDirector,MovieDescription, MoviePhoto from 
             dbo.Movie
                             ";
+
 
 
             var command = new SqlCommand(query, con);
@@ -49,7 +51,7 @@ m.MovieName";
 
             DataTable table = new DataTable();
 
-            using (var cmd = new SqlCommand(query2, con))
+            using (var cmd = new SqlCommand(query, con))
             using (var da = new SqlDataAdapter(cmd))
             {
                 cmd.CommandType = CommandType.Text;
@@ -63,8 +65,9 @@ m.MovieName";
         public static DataTable GetById(int id)
         {
             
-            string query = @"select MovieId,MovieName,MovieDirector,MovieDescription,MoviePhoto,ReviewAverage from 
-           dbo.Movie where MovieId=@id
+            string query = @"select MovieId,MovieName,MovieDirector,MovieDescription,MoviePhoto from 
+           dbo.Movie 
+           where MovieId=@id
             ";
 
             var con = new SqlConnection(ConfigurationManager.
@@ -88,22 +91,26 @@ m.MovieName";
         {
             string query = @"
                     insert into dbo.Movie values
-                    ('" + mov.MovieName + @"'
-                     ,'" + mov.MovieDirector + @"'
-                     ,'" + mov.MovieDescription + @"'
-                     ,'" + mov.MoviePhoto + @"'
-                     ,'" + mov.ReviewAverage + @"'
-                   
-)
+                    (@MovieName,
+                     @MovieDirector,
+                     @MovieDescription,
+                     @MoviePhoto)
                     ";
 
             DataTable table = new DataTable();
-            using (var con = new SqlConnection(ConfigurationManager.
-                       ConnectionStrings["MovieReviewDB"].ConnectionString))
-            using (var cmd = new SqlCommand(query, con))
-            using (var da = new SqlDataAdapter(cmd))
+            var con = new SqlConnection(ConfigurationManager.   
+                       ConnectionStrings["MovieReviewDB"].ConnectionString);
+
+            var command = new SqlCommand(query, con);
+
+            command.Parameters.AddWithValue("@MovieName", mov.MovieName);
+            command.Parameters.AddWithValue("@MovieDirector", mov.MovieDirector);
+            command.Parameters.AddWithValue("@MovieDescription", mov.MovieDescription);
+            command.Parameters.AddWithValue("@MoviePhoto", mov.MoviePhoto);
+
+            using (var da = new SqlDataAdapter(command))
             {
-                cmd.CommandType = CommandType.Text;
+                command.CommandType = CommandType.Text;
                 da.Fill(table);
             }
 
@@ -119,7 +126,7 @@ m.MovieName";
                     ,MovieDirector=@movieDirector
                     ,MovieDescription=@movieDescription
                     ,MoviePhoto=@moviePhoto
-                    ,ReviewAverage=@reviewAverage
+
                     
                     where MovieId=@id
                     ";
@@ -135,7 +142,6 @@ m.MovieName";
             command.Parameters.AddWithValue("@movieDirector", mov.MovieDirector);
             command.Parameters.AddWithValue("@movieDescription", mov.MovieDescription);
             command.Parameters.AddWithValue("@moviePhoto", mov.MoviePhoto);
-            command.Parameters.AddWithValue("@reviewAverage", mov.ReviewAverage);
          
 
             using (var da = new SqlDataAdapter(command))

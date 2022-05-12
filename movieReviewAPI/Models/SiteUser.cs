@@ -5,11 +5,10 @@ using System.Web;
 
 namespace movieReviewAPI.Models
 {
-    public class person
+    public class SiteUser
     {
         public int UserId { get; set; }
         public string UserName{ get; set; }
-        public bool adminFlag { get; set; }
 
     }
 }

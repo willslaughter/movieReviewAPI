@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Http;
 using System.Net.Http;
-using System.Web.Http;
 using System.Data;
-using System.Data.SqlClient;
-using System.Configuration;
-using System.Web.Mvc;
 using System.Net;
 using movieReviewAPI.Models;
+using movieReviewAPI.Services;
 
 namespace movieReviewAPI.Controllers
 {
@@ -19,41 +13,34 @@ namespace movieReviewAPI.Controllers
         // GET: User
         public HttpResponseMessage Get()
         {
-            string query = @"select UserId,UserName from 
-            dbo.ReviewUser
-            ";
-            DataTable table = new DataTable();
-            using(var con= new SqlConnection (ConfigurationManager.
-                       ConnectionStrings["MovieReviewDB"].ConnectionString))
-                       using (var cmd= new SqlCommand(query,con))
-            using (var da = new SqlDataAdapter(cmd))
-            {
-                cmd.CommandType = CommandType.Text;
-                da.Fill(table);
-            }
 
-            return Request.CreateResponse(HttpStatusCode.OK, table);
+            return Request.CreateResponse(HttpStatusCode.OK, UserDAO.Get());
 
         }
 
-        public string Post(person per)
+
+        public HttpResponseMessage Get(int id)
+        {
+
+            return Request.CreateResponse(HttpStatusCode.OK, UserDAO.GetById(id));
+
+        }
+
+        [Route("api/user/GetByName/{name}")]
+        [HttpGet]
+        public HttpResponseMessage GetByName(string name)
+        {
+
+            return Request.CreateResponse(HttpStatusCode.OK, UserDAO.GetByName(name));
+
+        }
+
+
+        public string Post(SiteUser usr)
         {
             try
             {
-                string query = @"
-                    insert into dbo.ReviewUser values
-                    ('"+per.UserName+ @"'
-                    ";
-
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = UserDAO.Post(usr);
 
                 return "Added Sucess!";
 
@@ -64,24 +51,12 @@ namespace movieReviewAPI.Controllers
             }
         }
 
-        public string Put(person per)
+        public string Put(SiteUser usr)
         {
             try
             {
-                string query = @"
-                    update dbo.ReviewUser set 
-                    UserName='" + per.UserName + @"'
-                    ";
 
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = UserDAO.Put(usr);
 
                 return "Update Sucess!";
 
@@ -96,27 +71,16 @@ namespace movieReviewAPI.Controllers
         {
             try
             {
-                string query = @"
-                    delete from dbo.ReviewUser where UserId=" + id + @"
-                    ";
-
-                DataTable table = new DataTable();
-                using (var con = new SqlConnection(ConfigurationManager.
-                           ConnectionStrings["MovieReviewDB"].ConnectionString))
-                using (var cmd = new SqlCommand(query, con))
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    da.Fill(table);
-                }
+                DataTable table = UserDAO.Delete(id);
 
                 return "Delete Sucess!";
-
             }
             catch (Exception)
             {
                 return "Failed to Delete!";
             }
         }
+
+       
     }
 }

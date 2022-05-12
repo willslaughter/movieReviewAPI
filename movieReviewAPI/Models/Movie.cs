@@ -12,6 +12,5 @@ namespace movieReviewAPI.Models
         public string MovieDirector { get; set; }
         public string MovieDescription{ get; set; }
         public string MoviePhoto { get; set; }
-        public double ReviewAverage { get; set; }
     }
 }
