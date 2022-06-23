@@ -33,7 +33,7 @@ namespace movieReviewAPI.Services
 
         public static DataTable Get()
         {
-            string query = @"select ReviewId,MovieId,Rating,ReviewDescription from 
+            string query = @"select ReviewId,MovieId,Rating,ReviewDescription,UserName from 
             dbo.Review
             ";
             DataTable table = new DataTable();
@@ -52,7 +52,7 @@ namespace movieReviewAPI.Services
 
         public static DataTable GetById(int id)
         {
-            string query = @"select ReviewId,MovieId,Rating,ReviewDescription from 
+            string query = @"select ReviewId,MovieId,Rating,ReviewDescription,UserName from 
             dbo.Review where MovieId=@id
             ";
 
@@ -78,7 +78,8 @@ namespace movieReviewAPI.Services
                     insert into dbo.Review values
                     (@id,
                      @rating,
-                     @reviewDescription
+                     @reviewDescription,
+                     @userName
 )
                     ";
 
@@ -92,6 +93,7 @@ namespace movieReviewAPI.Services
             command.Parameters.AddWithValue("@id", rev.MovieId);
             command.Parameters.AddWithValue("@rating", rev.Rating);
             command.Parameters.AddWithValue("@reviewDescription", rev.ReviewDescription);
+            command.Parameters.AddWithValue("@userName", rev.UserName);
 
             using (var da = new SqlDataAdapter(command))
             {

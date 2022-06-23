@@ -11,6 +11,7 @@ namespace movieReviewAPI.Models
         public int MovieId { get; set; }
         public double Rating { get; set; }
         public string ReviewDescription { get; set; }
+        public string UserName { get; set; }
 
     }
 }
